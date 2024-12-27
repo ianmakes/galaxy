@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solar System Orbit Simulator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Add some custom styles to make the simulator more visually appealing */
+        .simulator {
+            width: 800px;
+            height: 600px;
+            border: 1px solid #ccc;
+            margin: 40px auto;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-200 h-screen flex justify-center items-center">
+    <div class="simulator">
+        <canvas id="canvas" width="800" height="600"></canvas>
+    </div>
+    <div class="absolute bottom-0 left-0 p-4 text-lg">
+        <p>Solar System Orbit Simulator</p>
+        <p>Watch how the planets orbit around the Sun.</p>
+    </div>
+    <script>
+        // Get the canvas element
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Set the canvas background color
+        ctx.fillStyle = '#2f4f7f';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Define the Sun and planets objects
+        const sun = {
+            x: canvas.width / 2,
+            y: canvas.height / 2,
+            radius: 30,
+            color: '#ffc107'
+        };
+
+        const mercury = {
+            x: sun.x + 50,
+            y: sun.y,
+            radius: 5,
+            color: '#9e9e9e',
+            orbitRadius: 50,
+            angle: 0,
+            speed: 0.024, // 87.97 days per orbit, slowed down to half speed
+            name: 'Mercury'
+        };
+
+        const venus = {
+            x: sun.x + 80,
+            y: sun.y,
+            radius: 10,
+            color: '#ff9800',
+            orbitRadius: 80,
+            angle: 0,
+            speed: 0.013, // 224.7 days per orbit, slowed down to half speed
+            name: 'Venus'
+        };
+
+        const earth = {
+            x: sun.x + 110,
+            y: sun.y,
+            radius: 15,
+            color: '#2196f3',
+            orbitRadius: 110,
+            angle: 0,
+            speed: 0.0086, // 365.25 days per orbit, slowed down to half speed
+            name: 'Earth'
+        };
+
+        const moon = {
+            x: earth.x + 20,
+            y: earth.y,
+            radius: 3,
+            color: '#9e9e9e',
+            orbitRadius: 20,
+            angle: 0,
+            speed: 0.037, // 27.32 days per orbit, slowed down to half speed
+            name: 'Moon'
+        };
+
+        const mars = {
+            x: sun.x + 140,
+            y: sun.y,
+            radius: 10,
+            color: '#ff9800',
+            orbitRadius: 140,
+            angle: 0,
+            speed: 0.006, // 687 days per orbit, slowed down to half speed
+            name: 'Mars'
+        };
+
+        const jupiter = {
+            x: sun.x + 200,
+            y: sun.y,
+            radius: 20,
+            color: '#8bc34a',
+            orbitRadius: 200,
+            angle: 0,
+            speed: 0.00265, // 4333 days per orbit, slowed down to half speed
+            name: 'Jupiter'
+        };
+
+        const saturn = {
+            x: sun.x + 250,
+            y: sun.y,
+            radius: 18,
+            color: '#ff69b4',
+            orbitRadius: 250,
+            angle: 0,
+            speed: 0.00165, // 10759 days per orbit, slowed down to half speed
+            name: 'Saturn'
+        };
+
+        const uranus = {
+            x: sun.x + 300,
+            y: sun.y,
+            radius: 15,
+            color: '#4caf50',
+            orbitRadius: 300,
+            angle: 0,
+            speed: 0.0011, // 30687 days per orbit, slowed down to half speed
+            name: 'Uranus'
+        };
+
+        const neptune = {
+            x: sun.x + 350,
+            y: sun.y,
+            radius: 12,
+            color: '#03a9f4',
+            orbitRadius: 350,
+            angle: 0,
+            speed: 0.00085, // 60190 days per orbit, slowed down to half speed
+            name: 'Neptune'
+        };
+
+        let earthDays = 0;
+
+        // Draw the Sun and planets
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#2f4f7f';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw the Sun
+            ctx.fillStyle = sun.color;
+            ctx.beginPath();
+            ctx.arc(sun.x, sun.y, sun.radius, 0, 2 * Math.PI);
+            ctx.fill();
+
+            // Draw the Mercury
+            mercury.x = sun.x + Math.cos(mercury.angle) * mercury.orbitRadius;
+            mercury.y = sun.y + Math.sin(mercury.angle) * mercury.orbitRadius;
+            ctx.fillStyle = mercury.color;
+            ctx.beginPath();
+            ctx.arc(mercury.x, mercury.y, mercury.radius, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.font = '12px Arial';
+            ctx.fillStyle = '#fff';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+            ctx.fillText(mercury.name, mercury.x, mercury.y + mercury.radius + 5);
+
+            // Draw the Venus
+            venus.x = sun.x + Math.cos(venus.angle) * venus.orbitRadius;
+            venus.y = sun.y + Math.sin(venus.angle) * venus.orbitRadius;
+            ctx.fillStyle = venus.color;
+            ctx.beginPath();
+            ctx.arc(venus.x, venus.y, venus.radius, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.font = '12px Arial';
+            ctx.fillStyle = '#fff';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+            ctx.fillText(venus.name, venus.x, venus.y + venus.radius + 5);
+
+            // Draw the Earth
+            earth.x = sun.x + Math.cos(earth.angle) * earth.orbitRadius;
+            earth.y = sun.y + Math.sin(earth.angle) * earth.orbitRadius;
+            ctx.fillStyle = earth.color;
+            ctx.beginPath();
+            ctx.arc(earth.x, earth.y, earth.radius, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.font = '12px Arial';
+            ctx.fillStyle = '#fff';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+            ctx.fillText(earth.name, earth.x, earth.y + earth.radius + 5);
+
+            // Draw the Moon
+            moon.x = earth.x + Math.cos(moon.angle) * moon.orbitRadius;
+            moon.y = earth.y + Math.sin(moon.angle) * moon.orbitRadius;
+            ctx.fillStyle = moon.color;
+            ctx.beginPath();
+            ctx.arc(moon.x, moon.y, moon.radius, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.font = '10px Arial';
+            ctx.fillStyle = '#fff';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+            ctx.fillText(moon.name, moon.x, moon.y + moon.radius + 5);
+
+            // Draw the Mars
+            mars.x = sun.x + Math.cos(mars.angle) * mars.orbitRadius;
+            mars.y = sun.y + Math.sin(mars.angle) * mars.orbitRadius;
+            ctx.fillStyle = mars.color;
+            ctx.beginPath();
+            ctx.arc(mars.x, mars.y, mars.radius, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.font = '12px Arial';
+            ctx.fillStyle = '#fff';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+            ctx.fillText(mars.name, mars.x, mars.y + mars.radius + 5);
+
+            // Draw the Jupiter
+            jupiter.x = sun.x + Math.cos(jupiter.angle) * jupiter.orbitRadius;
+            jupiter.y = sun.y + Math.sin(jupiter.angle) * jupiter.orbitRadius;
+            ctx.fillStyle = jupiter.color;
+            ctx.beginPath();
+            ctx.arc(jupiter.x, jupiter.y, jupiter.radius, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.font = '12px Arial';
+            ctx.fillStyle = '#fff';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+            ctx.fillText(jupiter.name, jupiter.x, jupiter.y + jupiter.radius + 5);
+
+            // Draw the Saturn
+            saturn.x = sun.x + Math.cos(saturn.angle) * saturn.orbitRadius;
+            saturn.y = sun.y + Math.sin(saturn.angle) * saturn.orbitRadius;
+            ctx.fillStyle = saturn.color;
+            ctx.beginPath();
+            ctx.arc(saturn.x, saturn.y, saturn.radius, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.font = '12px Arial';
+            ctx.fillStyle = '#fff';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+            ctx.fillText(saturn.name, saturn.x, saturn.y + saturn.radius + 5);
+
+            // Draw the Uranus
+            uranus.x = sun.x + Math.cos(uranus.angle) * uranus.orbitRadius;
+            uranus.y = sun.y + Math.sin(uranus.angle) * uranus.orbitRadius;
+            ctx.fillStyle = uranus.color;
+            ctx.beginPath();
+            ctx.arc(uranus.x, uranus.y, uranus.radius, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.font = '12px Arial';
+            ctx.fillStyle = '#fff';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+            ctx.fillText(uranus.name, uranus.x, uranus.y + uranus.radius + 5);
+
+            // Draw the Neptune
+            neptune.x = sun.x + Math.cos(neptune.angle) * neptune.orbitRadius;
+            neptune.y = sun.y + Math.sin(neptune.angle) * neptune.orbitRadius;
+            ctx.fillStyle = neptune.color;
+            ctx.beginPath();
+            ctx.arc(neptune.x, neptune.y, neptune.radius, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.font = '12px Arial';
+            ctx.fillStyle = '#fff';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+            ctx.fillText(neptune.name, neptune.x, neptune.y + neptune.radius + 5);
+
+            // Draw the orbits
+            ctx.strokeStyle = '#666';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.arc(sun.x, sun.y, mercury.orbitRadius, 0, 2 * Math.PI);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.arc(sun.x, sun.y, venus.orbitRadius, 0, 2 * Math.PI);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.arc(sun.x, sun.y, earth.orbitRadius, 0, 2 * Math.PI);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.arc(earth.x, earth.y, moon.orbitRadius, 0, 2 * Math.PI);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.arc(sun.x, sun.y, mars.orbitRadius, 0, 2 * Math.PI);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.arc(sun.x, sun.y, jupiter.orbitRadius, 0, 2 * Math.PI);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.arc(sun.x, sun.y, saturn.orbitRadius, 0, 2 * Math.PI);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.arc(sun.x, sun.y, uranus.orbitRadius, 0, 2 * Math.PI);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.arc(sun.x, sun.y, neptune.orbitRadius, 0, 2 * Math.PI);
+            ctx.stroke();
+
+            // Update the angles
+            mercury.angle += mercury.speed;
+            venus.angle += venus.speed;
+            earth.angle += earth.speed;
+            moon.angle += moon.speed;
+            mars.angle += mars.speed;
+            jupiter.angle += jupiter.speed;
+            saturn.angle += saturn.speed;
+            uranus.angle += uranus.speed;
+            neptune.angle += neptune.speed;
+
+            // Update the Earth days
+            earthDays += 1;
+
+            // Display the Earth days
+            ctx.font = '12px Arial';
+            ctx.fillStyle = '#fff';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'top';
+            let months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            let daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+            let currentMonth = 0;
+            let currentDay = 0;
+            for (let i = 0; i < earthDays; i++) {
+                currentDay++;
+                if (currentDay > daysInMonth[currentMonth]) {
+                    currentDay = 1;
+                    currentMonth++;
+                    if (currentMonth > 11) {
+                        currentMonth = 0;
+                    }
+                }
+            }
+            ctx.fillText("Earth Date: " + months[currentMonth] + " " + currentDay, 10, 10);
+
+            // Request the next frame
+            requestAnimationFrame(draw);
+        }
+
+        // Start the animation
+        draw();
+    </script>
+</body>
+</html>
